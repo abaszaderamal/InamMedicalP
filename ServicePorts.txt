@@ -1,0 +1,7 @@
+Services=>
+	InamGateway.Api => 5000,5010
+	IdentityService => 5011,5021
+	ReportService => 5012,5022
+	AdminService => 5013,5023
+	DXOperationService => 5014,5024
+	TodoService => 5015,5025

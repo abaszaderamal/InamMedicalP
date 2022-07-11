@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  adminservice.api:
+    image: ${DOCKER_REGISTRY-}adminserviceapi
+    build:
+      context: .
+      dockerfile: Src/Services/AdminService/AdminService.Api/Dockerfile
+
+  dxoperationservice.api:
+    image: ${DOCKER_REGISTRY-}dxoperationserviceapi
+    build:
+      context: .
+      dockerfile: Src/Services/DXOperationService/DXOperationService.Api/Dockerfile
+
+
+  evaluationservice.api:
+    image: ${DOCKER_REGISTRY-}evaluationserviceapi
+    build:
+      context: .
+      dockerfile: Src/Services/EvaluationService/EvaluationService.Api/Dockerfile
+
+
+  identityservice.api:
+    image: ${DOCKER_REGISTRY-}identityserviceapi
+    build:
+      context: .
+      dockerfile: Src/Services/IdentityService/IdentityService.Api/Dockerfile
+
+
+  reportservice.api:
+    image: ${DOCKER_REGISTRY-}reportserviceapi
+    build:
+      context: .
+      dockerfile: Src/Services/ReportSercive/ReportService.Api/Dockerfile
+
+
+  todoservice.api:
+    image: ${DOCKER_REGISTRY-}todoserviceapi
+    build:
+      context: .
+      dockerfile: Src/Services/ToDoService/ToDoService.Api/Dockerfile
+
