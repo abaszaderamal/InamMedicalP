@@ -18,10 +18,12 @@ namespace ToDoService.Api.Services.Implementation
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Response<List<Todo>>> GetAllAsync()
+        public async Task<Response<List<ToDoDto>>> GetAllAsync(string userId)
         {
-            var result =await _unitOfWork.TodoRepository.GetAllAsync(p => p.IsDeleted == false);
-            return Response<List<Todo>>.Success(result ,StatusCodes.Status200OK);
+            // var result =await _unitOfWork.TodoRepository.GetAllAsync(p => p.IsDeleted == false);
+            var res = _unitOfWork.TodoRepository.GetAll(userId);
+            
+            return Response<List<ToDoDto>>.Success(res ,StatusCodes.Status200OK);
         }
 
         public async Task<Response<Todo>> GetByIdAsync(int id)
@@ -41,12 +43,12 @@ namespace ToDoService.Api.Services.Implementation
             {
                 Name = todoPostDto.Name,
                 Note = todoPostDto.Note,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = todoPostDto.Date == null ? DateTime.UtcNow : todoPostDto.Date,
                 Status = todoPostDto.Status,
                 AppUserId = userId,
             };
 
-            await _unitOfWork.TodoRepository.CreateAsync(todo);
+                await _unitOfWork.TodoRepository.CreateAsync(todo);
             await _unitOfWork.Save();
             return Response<NoContent>.Success(StatusCodes.Status200OK);
         }

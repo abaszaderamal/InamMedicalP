@@ -32,9 +32,9 @@ namespace ToDoService.Api.Controllers
 
         [HttpGet]
         [Authorize(Roles = "SuperAdmin,Admin,ProjectManager,GroupManager,Member")]
-        public async Task<Response<List<Todo>>> GetAll()
+        public async Task<Response<List<ToDoDto>>> GetAll()
         {
-            return await _serviceUnitOfWork.TodoService.GetAllAsync();
+            return await _serviceUnitOfWork.TodoService.GetAllAsync( HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
         }
 
         [HttpGet("{id}")]
