@@ -9,7 +9,7 @@ namespace ToDoService.Api.Services.Interface
         Task<Response<NoContent>> CreateAsync(TodoPostDto todoPostDto, string userId);
         Task<Response<NoContent>> UpdateAsync(TodoUpdateDto todoUpdateDto);
         Task<Response<NoContent>> DeleteAsync(int id);
-        Task<Response<List<ToDoDto>>> GetAllAsync(string userId);
+        Task<Response<List<List<ToDoDto>>>> GetAllAsync(string userId);
         Task<Response<Todo>> GetByIdAsync(int id);
     }
 }

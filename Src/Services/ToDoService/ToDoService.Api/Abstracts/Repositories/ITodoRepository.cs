@@ -5,6 +5,6 @@ namespace ToDoService.Api.Abstracts.Repositories
 {
     public interface ITodoRepository : IRepository<Todo>
     {
-        List<ToDoDto> GetAll(string userId);
+        List<List<ToDoDto>> GetAll(string userId);
     }
 }

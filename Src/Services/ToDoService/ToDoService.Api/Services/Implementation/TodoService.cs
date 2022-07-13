@@ -18,12 +18,12 @@ namespace ToDoService.Api.Services.Implementation
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Response<List<ToDoDto>>> GetAllAsync(string userId)
+        public async Task<Response<List<List<ToDoDto>>>> GetAllAsync(string userId)
         {
             // var result =await _unitOfWork.TodoRepository.GetAllAsync(p => p.IsDeleted == false);
             var res = _unitOfWork.TodoRepository.GetAll(userId);
 
-            return Response<List<ToDoDto>>.Success(res, StatusCodes.Status200OK);
+            return Response<List<List<ToDoDto>>>.Success(res, StatusCodes.Status200OK);
         }
 
         public async Task<Response<Todo>> GetByIdAsync(int id)
