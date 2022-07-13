@@ -22,13 +22,13 @@ namespace ToDoService.Api.Services.Implementation
         {
             // var result =await _unitOfWork.TodoRepository.GetAllAsync(p => p.IsDeleted == false);
             var res = _unitOfWork.TodoRepository.GetAll(userId);
-            
-            return Response<List<ToDoDto>>.Success(res ,StatusCodes.Status200OK);
+
+            return Response<List<ToDoDto>>.Success(res, StatusCodes.Status200OK);
         }
 
         public async Task<Response<Todo>> GetByIdAsync(int id)
         {
-            var result = await _unitOfWork.TodoRepository.GetAsync(p=> p.IsDeleted==false && p.Id == id );
+            var result = await _unitOfWork.TodoRepository.GetAsync(p => p.IsDeleted == false && p.Id == id);
             if (result is null)
             {
                 return Response<Todo>.Fail("Todo not found.", StatusCodes.Status404NotFound);
@@ -37,38 +37,42 @@ namespace ToDoService.Api.Services.Implementation
             return Response<Todo>.Success(result, StatusCodes.Status200OK);
         }
 
-        public async Task<Response<NoContent>> CreateAsync(TodoPostDto todoPostDto,string userId)
+        public async Task<Response<NoContent>> CreateAsync(TodoPostDto todoPostDto, string userId)
         {
+            DateTime dateTime = new DateTime();
             Todo todo = new Todo()
             {
                 Name = todoPostDto.Name,
                 Note = todoPostDto.Note,
-                CreatedAt = todoPostDto.Date == null ? DateTime.UtcNow : todoPostDto.Date,
-                Status = todoPostDto.Status,
+                CreatedAt = todoPostDto.Date == dateTime || todoPostDto.Date == null ? DateTime.UtcNow : todoPostDto.Date,
+                Status = todoPostDto.Status == null ? false : todoPostDto.Status,
                 AppUserId = userId,
             };
 
-                await _unitOfWork.TodoRepository.CreateAsync(todo);
+            await _unitOfWork.TodoRepository.CreateAsync(todo);
             await _unitOfWork.Save();
             return Response<NoContent>.Success(StatusCodes.Status200OK);
         }
 
-        
+
         public async Task<Response<NoContent>> UpdateAsync(TodoUpdateDto todoUpdateDto)
         {
-            
-            Todo todoDb = await _unitOfWork.TodoRepository.GetAsync(p => p.Id == todoUpdateDto.Id && p.IsDeleted == false );
+
+            Todo todoDb = await _unitOfWork.TodoRepository.GetAsync(p => p.Id == todoUpdateDto.Id && p.IsDeleted == false);
             if (todoDb is null)
             {
                 return Response<NoContent>.Fail("Todo not found.", StatusCodes.Status404NotFound);
             }
+            DateTime dateTime = new DateTime();
 
             todoDb.Name = todoUpdateDto.Name;
             todoDb.Note = todoUpdateDto.Note;
-            todoDb.CreatedAt = DateTime.UtcNow;
-            todoDb.Status = todoUpdateDto.Status;
-            
-            
+            todoDb.CreatedAt = todoUpdateDto.Date == dateTime || todoUpdateDto.Date == null
+                ? DateTime.UtcNow
+                : todoUpdateDto.Date;
+            todoDb.Status = todoUpdateDto.Status == null ? false : todoUpdateDto.Status;
+
+
             _unitOfWork.TodoRepository.Update(todoDb);
             await _unitOfWork.Save();
             return Response<NoContent>.Success(StatusCodes.Status200OK);
@@ -76,7 +80,7 @@ namespace ToDoService.Api.Services.Implementation
 
         }
 
-        
+
         public async Task<Response<NoContent>> DeleteAsync(int id)
         {
             Todo todoDb = await _unitOfWork.TodoRepository.GetAsync(p => p.Id == id);
@@ -90,6 +94,6 @@ namespace ToDoService.Api.Services.Implementation
             return Response<NoContent>.Success(StatusCodes.Status200OK);
         }
 
-        
+
     }
 }

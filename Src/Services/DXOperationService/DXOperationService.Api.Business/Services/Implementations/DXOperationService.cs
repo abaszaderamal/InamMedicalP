@@ -1,30 +1,60 @@
 ﻿using DXOperationService.Api.Business.Services.Interfaces;
 using DXOperationService.Api.Core.Abstracts;
+using DXOperationService.Api.Data.DAL;
 using Med.Shared.Dtos;
 using Med.Shared.Dtos.DXOperation;
 using Med.Shared.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace DXOperationService.Api.Business.Services.Implementations
 {
     public class DXOperationService : IDXOperationService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly AppDbContext _context;
 
-        public DXOperationService(IUnitOfWork unitOfWork)
+        public DXOperationService(IUnitOfWork unitOfWork, AppDbContext context)
         {
             _unitOfWork = unitOfWork;
+            _context = context;
         }
 
         public async Task<Response<NoContent>> CreateAsync(DXOperationPostDto dxOperationPostDto)
         {
-            var isemp = await _unitOfWork
-                .DxOperationMedicineRepository
-                .GetAsync(p => p.CreatedAt.Date == DateTime.UtcNow.Date);
-            if (isemp != null)
+
+
+            var dxops = _context
+                .DXOperations
+                .Where(p => p.IsDeleted == false && p.DoctorId == dxOperationPostDto.DoctorId &&
+                            p.AppUserId == dxOperationPostDto.AppUserId && p.CreatedAt.Date == DateTime.UtcNow.Date)
+                .Include(p => p.DXOperationMedicines)
+                .ToList();
+            if (dxops != null && dxops.Count != 0)
             {
-                return Response<NoContent>.Fail("bu gune  bu derman gosterilen hekim ile qeyde alinib", StatusCodes.Status400BadRequest);
+
+                foreach (var dxop in dxops)
+                {
+                    foreach (var medicine in dxop.DXOperationMedicines)
+                    {
+                        if (medicine.MedicineId == dxOperationPostDto.MedicineId &&
+                            medicine.CreatedAt.Date == DateTime.UtcNow.Date)
+                        {
+                            return Response<NoContent>.Fail("bu gune  bu derman gosterilen hekim ile qeyde alinib",
+                                StatusCodes.Status400BadRequest);
+                        }
+                    }
+                }
             }
+
+
+            //var isemp = await _unitOfWork
+            //    .DxOperationMedicineRepository
+            //    .GetAsync(p => p.CreatedAt.Date == DateTime.UtcNow.Date);
+            //if (isemp != null)
+            //{
+            //    return Response<NoContent>.Fail("bu gune  bu derman gosterilen hekim ile qeyde alinib", StatusCodes.Status400BadRequest);
+            //}
 
             DXOperation dxOperation = new DXOperation()
             {
